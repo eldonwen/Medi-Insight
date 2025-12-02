@@ -1,55 +1,41 @@
 import streamlit as st
+import sys
 import os
-from src.retrieval import query_rag
-from src.ingestion import load_documents, split_documents, create_vector_db
+
+# Ensure we can import from src
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
+from src.rag_chain import get_answer
 
 st.set_page_config(page_title="Medi-Insight", page_icon="🩺")
 
-st.title("🩺 Medi-Insight: Diabetes Guidelines RAG")
+st.title("Medi-Insight: Diabetes Guidelines Assistant")
 
-with st.sidebar:
-    st.header("Project Info")
-    st.write("This tool queries the Diabetes Canada Clinical Practice Guidelines.")
-    
-    if st.button("Re-ingest Knowledge Base"):
-        with st.spinner("Ingesting documents..."):
-            docs = load_documents()
-            chunks = split_documents(docs)
-            create_vector_db(chunks)
-            st.success("Ingestion complete!")
-
-    openai_api_key = st.text_input("OpenAI API Key", type="password")
-    if openai_api_key:
-        os.environ["OPENAI_API_KEY"] = openai_api_key
-
+# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Ask a question about diabetes guidelines..."):
+# React to user input
+if prompt := st.chat_input("Ask a question about Diabetes Canada Guidelines..."):
+    # Display user message in chat message container
+    st.chat_message("user").markdown(prompt)
+    # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
 
+    # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        if not os.environ.get("OPENAI_API_KEY"):
-            st.error("Please enter your OpenAI API Key in the sidebar.")
-            st.stop()
-            
         with st.spinner("Thinking..."):
             try:
-                response, sources = query_rag(prompt)
+                response = get_answer(prompt)
                 st.markdown(response)
-                
-                if sources:
-                    st.markdown("---")
-                    st.markdown("**Sources:**")
-                    for source in set(sources):
-                        st.markdown(f"- {os.path.basename(source)}")
-                
+                # Add assistant response to chat history
                 st.session_state.messages.append({"role": "assistant", "content": response})
             except Exception as e:
-                st.error(f"An error occurred: {e}")
+                error_msg = f"An error occurred: {str(e)}"
+                st.error(error_msg)
+                st.session_state.messages.append({"role": "assistant", "content": error_msg})

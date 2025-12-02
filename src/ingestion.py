@@ -6,6 +6,11 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
 
+import warnings
+# Suppress LangChainDeprecationWarning for Chroma
+from langchain_core._api import LangChainDeprecationWarning
+warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
+
 load_dotenv()
 
 DATA_PATH = "CPG"
