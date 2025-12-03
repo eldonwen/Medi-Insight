@@ -67,7 +67,7 @@ st.markdown("""
 with st.sidebar:
     st.header("About this Project")
     st.info(
-        "Medi-Insight uses OpenAI and LangChain to index the official **Diabetes Canada Clinical Practice Guidelines**. "
+        "Medi-Insight uses OpenAI and LangChain to index the official [Diabetes Canada Clinical Practice Guidelines](https://guidelines.diabetes.ca/cpg). "
         "It provides accurate, evidence-based answers for healthcare professionals."
     )
     
@@ -96,14 +96,16 @@ with st.sidebar:
     st.markdown(
         """
         **Eldon Wen**  
-        [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/eldon-wen/)  
+        [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)  
         [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/eldonwen/Medi-Insight)
         """
     )
 
 # 2. Header Image
 if os.path.exists("banner.jpg"):
-    st.image("banner.jpg", width="stretch")
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col2:
+        st.image("banner.jpg", width="stretch")
 
 # 3. Title & Subtitle
 st.title("Diabetes Canada Clinical Guidelines Assistant")
@@ -163,7 +165,7 @@ if process_now and prompt:
                         source_file = os.path.basename(full_source)
                         
                         # Lookup Title and URL
-                        title, url, pdf_link = source_lookup.get(source_file, (source_file, "#", "#"))
+                        title, url, pdf_link = source_lookup.get(source_file, (source_file, "https://guidelines.diabetes.ca/cpg", "#"))
                         
                         excerpt = doc.page_content[:200] + "..."
                         
