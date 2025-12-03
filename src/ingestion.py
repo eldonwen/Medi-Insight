@@ -3,7 +3,7 @@ import shutil
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from dotenv import load_dotenv
 
 import warnings
@@ -25,9 +25,12 @@ def load_documents():
     for filename in os.listdir(DATA_PATH):
         if filename.endswith(".pdf"):
             file_path = os.path.join(DATA_PATH, filename)
-            print(f"Loading {file_path}...")
-            loader = PyPDFLoader(file_path)
-            documents.extend(loader.load())
+            try:
+                print(f"Loading {file_path}...")
+                loader = PyPDFLoader(file_path)
+                documents.extend(loader.load())
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
     return documents
 
 def split_documents(documents):
@@ -59,6 +62,10 @@ def create_vector_db(chunks):
     print(f"Vector DB created at {CHROMA_PATH}")
 
 if __name__ == "__main__":
-    docs = load_documents()
-    chunks = split_documents(docs)
-    create_vector_db(chunks)
+    try:
+        docs = load_documents()
+        chunks = split_documents(docs)
+        create_vector_db(chunks)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()

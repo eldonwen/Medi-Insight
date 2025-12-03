@@ -7,3 +7,5 @@ pypdf
 python-dotenv
 tiktoken
 requests
+pandas
+openpyxl

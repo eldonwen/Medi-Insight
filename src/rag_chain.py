@@ -41,20 +41,27 @@ def get_answer(query):
     Question: {input}
     """)
 
-    # 6. Create Chain
-    document_chain = create_stuff_documents_chain(llm, prompt)
-    retrieval_chain = create_retrieval_chain(retriever, document_chain)
+    # 6. Retrieve Documents explicitly
+    docs = retriever.invoke(query)
 
-    # 7. Invoke Chain
-    response = retrieval_chain.invoke({"input": query})
+    # 7. Create Chain
+    document_chain = create_stuff_documents_chain(llm, prompt)
+
+    # 8. Stream Answer
+    stream = document_chain.stream({"input": query, "context": docs})
     
-    return response["answer"]
+    return stream, docs
 
 if __name__ == "__main__":
     test_query = "What recommendations are provided regarding exercise in hot environments for people with diabetes?"
     print(f"Query: {test_query}")
     try:
-        answer = get_answer(test_query)
-        print(f"Answer: {answer}")
+        stream, docs = get_answer(test_query)
+        print("Answer: ", end="", flush=True)
+        for chunk in stream:
+            print(chunk, end="", flush=True)
+        print("\n\nSources:")
+        for doc in docs:
+            print(f"- {doc.metadata.get('source')}")
     except Exception as e:
         print(f"Error: {e}")
