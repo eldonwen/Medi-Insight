@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![LangChain](https://img.shields.io/badge/Powered%20by-LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
 
-> **Live Demo:** [Click here to try Medi-Insight](https://diabetesrobot.azurewebsites.net/)
+> **Live Demo:** [Click here to try Medi-Insight]([https://diabetesrobot.azurewebsites.net/](https://medi-insight-serverless.lemontree-0d535c65.eastus.azurecontainerapps.io/)
 
 ## 📖 Overview
 
